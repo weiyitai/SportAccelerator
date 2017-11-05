@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">运动加速器</string>
+    <string name="action_settings">Settings</string>
+    <string name="xposed_description">安卓手机运动加速器</string>
+</resources>
