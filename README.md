@@ -1,0 +1,2 @@
+# SportAccelerator
+通过修改传感器的值来修改APP运动数据的Xposed模块
