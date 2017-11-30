@@ -23,7 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int a = 0x2;
                 Log.d("MainActivity", "a:" + a);
-
                 PackageManager pm = getPackageManager();
 
                 long millis = System.currentTimeMillis();
