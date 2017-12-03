@@ -9,11 +9,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.util.SparseArrayCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import java.text.DateFormat;
@@ -26,15 +29,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        getFragmentManager().beginTransaction().replace(R.id.fl_content, new SettingFragment()).commit();
 
-        getFragmentManager().beginTransaction().replace(R.id.fl_content, new SettingFragment()).commit();
+        TabLayout tabLayout = findViewById(R.id.tab);
+        ViewPager viewPager = findViewById(R.id.vp_content);
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.app)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.setting)));
+//        tabLayout.setupWithViewPager(viewPager);
+
+        SparseArrayCompat<Fragment> arrayCompat = new SparseArrayCompat<>(2);
+        arrayCompat.put(0, new AppFragment());
+        arrayCompat.put(1, new SettingFragment());
+        String[] strings = getResources().getStringArray(R.array.adapt_title);
+
+        viewPager.setAdapter(new PaperAdapter(getSupportFragmentManager(),strings, arrayCompat));
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+//                getSupportFragmentManager().beginTransaction().add(R.id.fl_content, new SettingFragment()).commit();
+
                 int a = 0x2;
                 Log.d("MainActivity", "a:" + a);
                 PackageManager pm = getPackageManager();
@@ -116,13 +132,6 @@ public class MainActivity extends AppCompatActivity {
         return className;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
     private static class PackageAction extends BroadcastReceiver {
 
         @Override
@@ -132,21 +141,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
 
-        getSharedPreferences("", MODE_MULTI_PROCESS);
+    static class PaperAdapter extends FragmentStatePagerAdapter {
 
-        int id = item.getItemId();
+        private final SparseArrayCompat<Fragment> mArrayCompat;
+        private final String[] mTitle;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        public PaperAdapter(FragmentManager fm, String[] strings, SparseArrayCompat<Fragment> arrayCompat) {
+            super(fm);
+            mTitle = strings;
+            mArrayCompat = arrayCompat;
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public Fragment getItem(int position) {
+            return mArrayCompat.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mArrayCompat.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTitle[position];
+        }
     }
+
 }

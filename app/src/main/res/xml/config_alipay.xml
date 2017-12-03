@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:inputType="number"
+        android:key="sp_key_ali_upper_limit"
+        android:summary="50000"
+        android:title="@string/up_limit"/>
+
+    <EditTextPreference
+        android:inputType="number"
+        android:defaultValue="@string/rate"
+        android:key="sp_key_ali_rate"
+        android:numeric="integer"
+        android:summary="15"
+        android:title="@string/speed_rate"/>
+
+    <SwitchPreference
+        android:key="sp_key_delete_ali_sport_record"
+        android:defaultValue="false"
+        android:summary="@string/des_delete_record"
+        android:textSize="2sp"
+        android:title="@string/delete_record"/>
+
+
+</PreferenceScreen>

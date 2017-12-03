@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="adapt_title">
+        <item>应用</item>
+        <item>设置</item>
+
+    </array>
+
+</resources>

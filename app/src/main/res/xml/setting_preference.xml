@@ -1,53 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    android:key="ps_root"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RingtonePreference
-        android:icon="@drawable/ic_launcher_background"
-        android:key="@string/app_name"
-        android:summary="@string/app_name"
-        android:title="@string/action_settings"/>
-
-    <CheckBoxPreference
-        android:key="@string/action_settings"
-        android:summary="@string/action_settings"
-        android:summaryOff="off"
-        android:summaryOn="on"
-        android:title="@string/app_name"/>
+    <SwitchPreference
+        android:key="app"/>
 
 
     <SwitchPreference
-        android:alpha="0.2"
-        android:autoLink="web"
-        android:autoText="true"
-        android:key="@string/action_settings"
-        android:linksClickable="true"
-        android:padding="16dp"
-        android:summary="@string/bottom_sheet_behavior"
-        android:switchTextOff="off"
-        android:switchTextOn="on"
-        android:textColorLink="@color/colorPrimary"
-        android:title="@string/app_name"/>
+        android:defaultValue="false"
+        android:key="sp_key_print_log"
+        android:title="@string/log"/>
 
+    <Preference
+        android:title="@string/feedback"/>
 
-    <PreferenceCategory android:title="@string/app_name">
-        <Preference
-            android:key="@string/app_name"
-            android:summary="@string/bottom_sheet_behavior"
-            android:title="@string/app_name"/>
-
-        <Preference
-            android:key="@string/app_name"
-            android:title="关于"/>
-
-    </PreferenceCategory>
-
-    <EditTextPreference
-        android:defaultValue="20"
-        android:inputType="number"
-        android:key="edit"
-        android:summary="20"
-        android:title="@string/app_name"
-    />
-
+    <Preference
+        android:title="@string/about"/>
 
 </PreferenceScreen>

@@ -3,24 +3,48 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="6dp"
+        android:padding="@dimen/sw_margin"
         android:src="@mipmap/ic_launcher_round"/>
 
-    <TextView
-        android:id="@+id/tv_name"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="10dp"
-        android:layout_toRightOf="@+id/iv_icon"
-        android:text="name"
-        android:textColor="#6C6C6C"/>
+        android:layout_toRightOf="@+id/iv_icon">
 
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="QQ"
+            android:textColor="#6C6C6C"
+            android:textSize="@dimen/font_20"/>
+
+
+        <TextView
+            android:id="@+id/tv_des"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_name"
+            tools:text="ss"
+            android:textColor="#6C6C6C"/>
+    </RelativeLayout>
+
+    <Switch
+        android:id="@+id/sw_status"
+        android:buttonTint="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/sw_margin"/>
 
 </RelativeLayout>
