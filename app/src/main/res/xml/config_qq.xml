@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <SwitchPreference
+        android:key="@string/pk_qq"
+        android:defaultValue="true"
+        android:summaryOff="@string/disable"
+        android:summaryOn="@string/enable"
+        android:title="加速"/>
+
     <EditTextPreference
         android:inputType="number"
         android:key="sp_key_qq_upper_limit"
-        android:visibility="gone"
         android:summary="50000"
         android:title="@string/up_limit"/>
 
@@ -13,5 +19,9 @@
         android:key="sp_key_qq_rate"
         android:summary="15"
         android:title="@string/speed_rate"/>
+
+    <Preference
+        android:key="@string/about"
+        android:title="@string/about"/>
 
 </PreferenceScreen>

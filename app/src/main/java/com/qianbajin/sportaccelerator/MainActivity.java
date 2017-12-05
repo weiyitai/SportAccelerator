@@ -37,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.setting)));
 //        tabLayout.setupWithViewPager(viewPager);
 
+
         SparseArrayCompat<Fragment> arrayCompat = new SparseArrayCompat<>(2);
-        arrayCompat.put(0, new AppFragment());
+        arrayCompat.put(0, new AppListFragment());
         arrayCompat.put(1, new SettingFragment());
         String[] strings = getResources().getStringArray(R.array.adapt_title);
 

@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <SwitchPreference
+        android:title="加速"
+        android:defaultValue="true"
+        android:key="@string/pk_alipay"
+        android:summaryOff="@string/disable"
+        android:summaryOn="@string/enable"/>
+
     <EditTextPreference
+        android:defaultValue="60000"
         android:inputType="number"
         android:key="sp_key_ali_upper_limit"
         android:summary="50000"
         android:title="@string/up_limit"/>
 
     <EditTextPreference
+        android:defaultValue="30L"
         android:inputType="number"
-        android:defaultValue="@string/rate"
         android:key="sp_key_ali_rate"
         android:numeric="integer"
         android:summary="15"
         android:title="@string/speed_rate"/>
 
     <SwitchPreference
-        android:key="sp_key_delete_ali_sport_record"
         android:defaultValue="false"
+        android:key="sp_key_delete_ali_sport_record"
         android:summary="@string/des_delete_record"
         android:textSize="2sp"
         android:title="@string/delete_record"/>
+
+    <Preference
+        android:key="@string/about"
+        android:title="@string/about"/>
 
 
 </PreferenceScreen>

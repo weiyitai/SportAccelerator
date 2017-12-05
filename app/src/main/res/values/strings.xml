@@ -17,7 +17,15 @@
 
     <!-- Optional button to Skip a PreferenceActivity [CHAR LIMIT=20] -->
     <string name="skip_button_label">Skip</string>
-    <string name="log">日志开关</string>
+    <string name="sensor_log">传感器日志</string>
+    <string name="config_log">配置日志</string>
     <string name="feedback">反馈</string>
     <string name="about">关于</string>
+    <string name="alipay">支付宝</string>
+    <string name="qq">QQ</string>
+
+    <string name="pk_alipay">com.eg.android.AlipayGphone</string>
+    <string name="pk_qq">com.tencent.mobileqq</string>
+    <string name="enable">已启用加速</string>
+    <string name="disable">已关闭加速</string>
 </resources>

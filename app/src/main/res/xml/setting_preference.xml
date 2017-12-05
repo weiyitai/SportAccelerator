@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    android:key="ps_root"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <SwitchPreference
-        android:key="app"/>
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="ps_root">
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="sp_key_print_log"
-        android:title="@string/log"/>
+        android:key="sp_key_sensor_log"
+        android:title="@string/sensor_log"/>
+
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="sp_key_config_log"
+        android:title="@string/config_log"/>
 
     <Preference
+        android:key="feedback"
         android:title="@string/feedback"/>
 
     <Preference
+        android:key="about"
         android:title="@string/about"/>
 
 </PreferenceScreen>
