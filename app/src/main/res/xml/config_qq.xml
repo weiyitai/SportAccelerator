@@ -2,19 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-        android:key="@string/pk_qq"
         android:defaultValue="true"
+        android:key="@string/pk_qq"
         android:summaryOff="@string/disable"
         android:summaryOn="@string/enable"
         android:title="加速"/>
 
     <EditTextPreference
+        android:defaultValue="30000"
         android:inputType="number"
         android:key="sp_key_qq_upper_limit"
-        android:summary="50000"
+        android:summary="30000"
         android:title="@string/up_limit"/>
 
     <EditTextPreference
+        android:defaultValue="15"
         android:inputType="number"
         android:key="sp_key_qq_rate"
         android:summary="15"

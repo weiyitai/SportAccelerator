@@ -80,10 +80,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppHolde
 
         public AppHolder(View itemView) {
             super(itemView);
-            mIvIcon = itemView.findViewById(R.id.iv_icon);
-            mTvName = itemView.findViewById(R.id.tv_name);
-            mTvDes = itemView.findViewById(R.id.tv_des);
-            mSwitch = itemView.findViewById(R.id.sw_status);
+            mIvIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            mTvName = (TextView) itemView.findViewById(R.id.tv_name);
+            mTvDes = (TextView) itemView.findViewById(R.id.tv_des);
+            mSwitch = (Switch) itemView.findViewById(R.id.sw_status);
 
         }
     }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="sp_key_ali_step_edit"
+        android:summary="@string/summary_ali_edit"
+        android:title="@string/ali_step_edit"/>
+
+    <EditTextPreference
+        android:defaultValue="19998"
+        android:inputType="number"
+        android:key="sp_key_ali_expect_step"
+        android:summary="19998"
+        android:title="@string/ali_first_edit"/>
+
+
+</PreferenceScreen>

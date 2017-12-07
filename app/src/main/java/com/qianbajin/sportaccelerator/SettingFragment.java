@@ -22,7 +22,6 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting_preference);
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         PreferenceScreen root = (PreferenceScreen) findPreference("ps_root");
 //        SwitchPreference app = (SwitchPreference) findPreference("app");
 //        app.setIcon(R.mipmap.ic_launcher);
@@ -32,6 +31,24 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         preference.setIcon(R.mipmap.ic_launcher_round);
         preference.setTitle("QQ");
 //        root.addPreference(preference);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.d("SettingFragment", "hidden");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override

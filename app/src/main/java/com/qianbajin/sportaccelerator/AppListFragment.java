@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
+import com.qianbajin.sportaccelerator.fragment.AliFragment;
+import com.qianbajin.sportaccelerator.fragment.QQFragment;
 import com.qianbajin.sportaccelerator.v4.PreferenceFragment;
 /**
  * @author Administrator
@@ -21,6 +23,7 @@ public class AppListFragment extends PreferenceFragment {
 
     private String[] mAppPkList;
     private Fragment mFragment;
+
     @Override
     public void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
@@ -56,7 +59,7 @@ public class AppListFragment extends PreferenceFragment {
             default:
                 break;
         }
-         startActivity(preference.getKey());
+        ConfigActivity.show(getActivity(), preference.getKey());
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 

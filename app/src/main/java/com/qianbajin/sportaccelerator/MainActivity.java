@@ -1,14 +1,6 @@
 package com.qianbajin.sportaccelerator;
 
-import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,17 +8,14 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
   
-    private static final String SP_PATH = "chmod 755 /data/data/com.qianbajin.sportaccelerator/shared_prefs/com.qianbajin.sportaccelerator_preferences.xml";
+    private static final String SP_PATH = "chmod 654 /data/data/com.qianbajin.sportaccelerator/shared_prefs/com.qianbajin.sportaccelerator_preferences.xml";
     private static final String SP_PATH_P = "chmod 755 /data/data/com.qianbajin.sportaccelerator/shared_prefs";
     private static final String SP_PATH_pp = "chmod 755 /data/data/com.qianbajin.sportaccelerator";
     
@@ -47,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.setAdapter(new PaperAdapter(getSupportFragmentManager(), strings, arrayCompat));
 
+        File file = new File("");
     }
 
     static class PaperAdapter extends FragmentStatePagerAdapter {

@@ -37,7 +37,7 @@ public class AppFragment extends Fragment implements AppListAdapter.OnItemClickL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRv = view.findViewById(R.id.rv_app);
+        mRv = (RecyclerView) view.findViewById(R.id.rv_app);
         PackageManager pm = getActivity().getPackageManager();
         mInfoList = new ArrayList<>();
         try {

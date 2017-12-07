@@ -42,4 +42,8 @@
                             若不需查看加速记录可关闭,\n建议关闭,避免不必要的性能损耗 </string>
     <string name="log_config">应用打开的时候将读取到的配置记录到日志文件,若所有功能正常可关闭</string>
     <string name="a_cup_of_tea">请我喝杯茶</string>
+    <string name="ali_step_edit">直接修改</string>
+    <string name="summary_ali_edit">直接修改运动数据</string>
+    <string name="ali_first_edit">首次打开APP时需要达到的步数</string>
+    <string name="edit_ali_step">直接修改支付宝运动数据</string>
 </resources>
