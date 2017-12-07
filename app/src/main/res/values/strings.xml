@@ -28,4 +28,18 @@
     <string name="pk_qq">com.tencent.mobileqq</string>
     <string name="enable">已启用加速</string>
     <string name="disable">已关闭加速</string>
+    <string name="stop_app">尝试停止应用</string>
+    <string name="direct_edit">尝试直接修改运动数据</string>
+
+    <string name="about_ali">支付宝进行运动数据的上传会有一定的间隔,所以不是你每次打开进入运动界面都会看到最新的运动数据,需要等一会......\n
+    如果看到的不是理想的运动数据,请过几分钟再进入或关闭应用再重新打开
+    </string>
+    <string name="about_stop_app">启用/停用加速功能,或者修改参数会在该应用下次启动时才生效,点击尝试停止应用</string>
+    <string name="about_global">启用加速功能需要把相应的app打开,或者让app在后台运行,并且你处于行走/运动状态,或者你拿着手机在手上晃动让app计步,
+        在app接收到传感器值之前进行传感器数据的修改,从而达到运动加速的目的,该功能并不会影响手机的其他功能</string>
+    <string name="stop_alipay">尝试停止支付宝</string>
+    <string name="log_sensor">打开会将传感器的数据写入到日志中\n\n
+                            若不需查看加速记录可关闭,\n建议关闭,避免不必要的性能损耗 </string>
+    <string name="log_config">应用打开的时候将读取到的配置记录到日志文件,若所有功能正常可关闭</string>
+    <string name="a_cup_of_tea">请我喝杯茶</string>
 </resources>
