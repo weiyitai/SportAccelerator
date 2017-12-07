@@ -25,3 +25,14 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+
+ext {
+    compileSdkVersion = 25
+    buildToolsVersion = '26.0.2'
+    supportLibVersion = "25.3.1"
+    minSdkVersion = 21
+    targetSdkVersion = 25
+    versionCode = 1
+    versionName = 'sportaccelerator 1.0'
+}
