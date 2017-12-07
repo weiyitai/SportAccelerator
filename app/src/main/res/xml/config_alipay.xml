@@ -16,23 +16,24 @@
         android:title="@string/up_limit"/>
 
     <EditTextPreference
-        android:defaultValue="30L"
+        android:defaultValue="30"
         android:inputType="number"
         android:key="sp_key_ali_rate"
         android:numeric="integer"
         android:summary="15"
         android:title="@string/speed_rate"/>
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="sp_key_delete_ali_sport_record"
-        android:summary="@string/des_delete_record"
-        android:textSize="2sp"
-        android:title="@string/delete_record"/>
+    <Preference
+        android:key="stop_app"
+        android:summary="@string/about_stop_app"
+        android:title="@string/stop_alipay"/>
 
     <Preference
         android:key="@string/about"
+        android:summary="@string/about_ali"
         android:title="@string/about"/>
 
-
+    <Preference
+        android:key="direct_edit"
+        android:title="@string/direct_edit"/>
 </PreferenceScreen>
