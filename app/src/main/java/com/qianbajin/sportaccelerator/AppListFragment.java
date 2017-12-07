@@ -39,7 +39,7 @@ public class AppListFragment extends PreferenceFragment {
                 screen.addPreference(preference);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Toast.makeText(activity, "应用加载错误", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "请检查是否安装了支付宝和QQ", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
