@@ -8,7 +8,6 @@
         android:key="sp_key_sensor_log"
         android:title="@string/sensor_log"/>
 
-
     <SwitchPreference
         android:defaultValue="true"
         android:key="sp_key_config_log"
@@ -19,7 +18,12 @@
         android:title="@string/feedback"/>
 
     <Preference
+        android:key="a_cup_of_tea"
+        android:title="@string/a_cup_of_tea"/>
+
+    <Preference
         android:key="about"
+        android:summary="@string/about_global"
         android:title="@string/about"/>
 
 </PreferenceScreen>
