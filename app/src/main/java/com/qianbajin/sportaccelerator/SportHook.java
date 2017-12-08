@@ -49,10 +49,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
     private static int sAliUpperLimit;
     private static Calendar sCalendar;
 
-    static {
-        XposedBridge.log("SportHook  static myPid:" + Process.myPid());
-    }
-
     private static void printString(String... msg) {
         if (!sLog) {
             return;
@@ -65,14 +61,13 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
     }
 
     private static void printLog(Object... msg) {
-        if (!sLog) {
-            return;
+        if (sLog) {
+            StringBuilder sb = new StringBuilder(64);
+            for (Object o : msg) {
+                sb.append(o.toString());
+            }
+            XposedBridge.log(sb.toString());
         }
-        StringBuilder sb = new StringBuilder(64);
-        for (Object o : msg) {
-            sb.append(o.toString());
-        }
-        XposedBridge.log(sb.toString());
     }
 
     private static void loadConfig() {
@@ -103,10 +98,10 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 sAliUpperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "30000"));
                 Class<?> application = XposedHelpers.findClass("android.app.Application", lpparam.classLoader);
                 Method onCreate = XposedHelpers.findMethodExact(application, "onCreate", new Class[0]);
-                XposedBridge.hookMethod(onCreate, new AliApplicationHook(lpparam));
-                RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
+                AliApplicationHook aliApplicationHook = new AliApplicationHook(lpparam);
+                XposedBridge.hookMethod(onCreate, aliApplicationHook);
             }
-            if (sProcessName.equals(ALI_EXT)) {
+            if (sProcessName.equals(Constant.ALI_EXT)) {
                 boolean speedUp = sXsp.getBoolean(Constant.PK_ALIPAY, false);
                 if (speedUp) {
                     RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
@@ -146,30 +141,35 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             boolean edit = sXsp.getBoolean(Constant.SP_KEY_ALI_STEP_EDIT, false);
             if (edit) {
                 AliStepRecord todayStep = getTodayStep(application);
-                int upLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "26000"));
+                int upperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "26000"));
                 int expectStep = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_EXPECT_STEP, "19000"));
-                if (ALI_TODAY_STEP < upLimit) {
+                if (ALI_TODAY_STEP < upperLimit) {
                     long time = todayStep.getTime();
                     long today0Mills = getToday0Mills();
                     // 是否是今天记录
+                    String tip;
                     if (time < today0Mills) {
                         recordStep.setTime(today0Mills + 10);
+                        tip = "新的一天增加步数";
                     } else if (time + 30000 < recordStep.getTime()) {
                         // 把记录尽量靠前,这样可以跨步数大点
                         recordStep.setTime(time + 30000);
+                        tip = "在baseStep的时间上增加步数";
+                    } else {
+                        tip = "在stepRecord的时间上增加步数";
                     }
                     int sensorStep = recordStep.getSteps();
                     recordStep.setSteps(sensorStep - expectStep);
                     String json = JSON.toJSON(new AliStepRecord[]{recordStep}).toString();
                     recordSp.edit().putString(Constant.ALI_SP_KEY_STEPRECORD, json).apply();
-                    printLog("edit finish,baseStep:", ALI_TODAY_STEP, "    expectStep:", expectStep);
+                    printLog("修改完成>>:", tip, ">>baseStep:", ALI_TODAY_STEP, "    本次增加步数:", expectStep, "    修改之后步数:", ALI_TODAY_STEP + expectStep);
                 }
             }
         }
 
         @Override
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-            printLog("afterHookedMethod:");
+            printLog("afterHookedMethod>>>android.app.Application>>baseStep:", ALI_TODAY_STEP, "    SENSOR_STEP:", SENSOR_STEP);
         }
 
         private AliStepRecord getRecordStep(SharedPreferences recordSp) {
@@ -179,7 +179,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 List<AliStepRecord> stepRecordList = JSON.parseArray(stepRecords, AliStepRecord.class);
                 stepRecord = stepRecordList.get(stepRecordList.size() - 1);
                 SENSOR_STEP = stepRecord.getSteps();
-                printLog("SENSOR_STEP:", SENSOR_STEP);
             }
             return stepRecord != null ? stepRecord : new AliStepRecord();
         }
@@ -193,7 +192,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 long time = baseStep.getTime();
                 long timeInMillis = getToday0Mills();
                 ALI_TODAY_STEP = time > timeInMillis ? baseStep.getSteps() : 0;
-                printLog("ALI_TODAY_STEP:", ALI_TODAY_STEP);
             }
             return baseStep != null ? baseStep : new AliStepRecord();
         }
@@ -220,7 +218,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
 
         public DireSportHook(int rate) {
             mRate = rate;
-            printLog("DireSportHook rate:", rate, "   ALI_TODAY_STEP:", ALI_TODAY_STEP);
+            printLog("DireSportHook rate:", rate, "    SENSOR_STEP:", SENSOR_STEP, "   ALI_TODAY_STEP:", ALI_TODAY_STEP);
         }
 
         @Override
@@ -231,7 +229,9 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             }
             ((float[]) param.args[1])[0] = value + mRate * mCount;
             mCount++;
-            printLog(sProcessName, "  传感器值:", value, "   SENSOR_STEP:", SENSOR_STEP, "    ", RATE_ALI + " * " + mCount, "   步数:", ((float[]) param.args[1])[0]);
+            if (sLog) {
+                printLog(sProcessName, "  传感器值:", value, "    ", RATE_ALI + " * " + mCount, "   步数:", ((float[]) param.args[1])[0]);
+            }
         }
     }
 
