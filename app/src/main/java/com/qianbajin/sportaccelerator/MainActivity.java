@@ -5,20 +5,18 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-  
     private static final String SP_PATH = "chmod 654 /data/data/com.qianbajin.sportaccelerator/shared_prefs/com.qianbajin.sportaccelerator_preferences.xml";
     private static final String SP_PATH_P = "chmod 755 /data/data/com.qianbajin.sportaccelerator/shared_prefs";
     private static final String SP_PATH_pp = "chmod 755 /data/data/com.qianbajin.sportaccelerator";
-    
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,43 +27,11 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.app)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.setting)));
 
-        SparseArrayCompat<Fragment> arrayCompat = new SparseArrayCompat<>(2);
-        arrayCompat.put(0, new AppListFragment());
-        arrayCompat.put(1, new SettingFragment());
         String[] strings = getResources().getStringArray(R.array.adapt_title);
 
-        viewPager.setAdapter(new PaperAdapter(getSupportFragmentManager(), strings, arrayCompat));
+        viewPager.setAdapter(new PaperAdapter(getSupportFragmentManager(), strings));
 
-        File file = new File("");
     }
-
-    static class PaperAdapter extends FragmentStatePagerAdapter {
-
-        private final SparseArrayCompat<Fragment> mArrayCompat;
-        private final String[] mTitle;
-
-        public PaperAdapter(FragmentManager fm, String[] strings, SparseArrayCompat<Fragment> arrayCompat) {
-            super(fm);
-            mTitle = strings;
-            mArrayCompat = arrayCompat;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mArrayCompat.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mArrayCompat.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mTitle[position];
-        }
-    }
-
 
     private boolean chmod() {
         try {
@@ -83,6 +49,42 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         chmod();
         super.onBackPressed();
+    }
+
+    static class PaperAdapter extends FragmentStatePagerAdapter {
+
+        private final String[] mTitle;
+
+        public PaperAdapter(FragmentManager fm, String[] strings) {
+            super(fm);
+            mTitle = strings;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.d("PaperAdapter", "getItem:" + position);
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    fragment = new AppListFragment();
+                    break;
+                case 1:
+                default:
+                    fragment = new SettingFragment();
+                    break;
+            }
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return mTitle.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTitle[position];
+        }
     }
 
 }
