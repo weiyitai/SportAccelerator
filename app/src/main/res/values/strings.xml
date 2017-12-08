@@ -44,6 +44,8 @@
     <string name="a_cup_of_tea">请我喝杯茶</string>
     <string name="ali_step_edit">直接修改</string>
     <string name="summary_ali_edit">直接修改运动数据</string>
-    <string name="ali_first_edit">首次打开APP时需要达到的步数</string>
+    <string name="ali_first_edit">每次打开APP时需要增加的步数</string>
     <string name="edit_ali_step">直接修改支付宝运动数据</string>
+    <string name="tips">建议</string>
+    <string name="summary_tip">建议每次增加的步数尽量调小,尽量不要超过10000,否则增加步数太快可能会导致被检测为异常</string>
 </resources>
