@@ -14,5 +14,9 @@
         android:summary="19998"
         android:title="@string/ali_first_edit"/>
 
+    <Preference
+        android:key="tip"
+        android:summary="@string/summary_tip"
+        android:title="@string/tips"/>
 
 </PreferenceScreen>
