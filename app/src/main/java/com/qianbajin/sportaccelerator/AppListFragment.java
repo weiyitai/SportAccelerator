@@ -1,17 +1,14 @@
 package com.qianbajin.sportaccelerator;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.qianbajin.sportaccelerator.fragment.AliFragment;
-import com.qianbajin.sportaccelerator.fragment.QQFragment;
 import com.qianbajin.sportaccelerator.v4.PreferenceFragment;
 /**
  * @author Administrator
@@ -22,12 +19,11 @@ import com.qianbajin.sportaccelerator.v4.PreferenceFragment;
 public class AppListFragment extends PreferenceFragment {
 
     private String[] mAppPkList;
-    private Fragment mFragment;
 
     @Override
     public void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        FragmentActivity activity = getActivity();
+        Activity activity = getActivity();
         addPreferencesFromResource(R.xml.app_list);
         PreferenceScreen screen = (PreferenceScreen) findPreference("ps_root");
         PackageManager pm = getActivity().getPackageManager();
@@ -49,23 +45,8 @@ public class AppListFragment extends PreferenceFragment {
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        switch (preference.getKey()) {
-            case Constant.PK_ALIPAY:
-                mFragment = new AliFragment();
-                break;
-            case Constant.PK_QQ:
-                mFragment = new QQFragment();
-                break;
-            default:
-                break;
-        }
         ConfigActivity.show(getActivity(), preference.getKey());
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
-
-    private void startActivity(String key) {
-        Intent intent = new Intent(getActivity(), ConfigActivity.class);
-        intent.putExtra(ConfigActivity.ARG, key);
-        startActivity(intent);
-    }
+    
 }
