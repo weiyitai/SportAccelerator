@@ -6,10 +6,12 @@
     <SwitchPreference
         android:defaultValue="false"
         android:key="sp_key_sensor_log"
+        android:summary="@string/summary_sensor_log"
         android:title="@string/sensor_log"/>
 
     <SwitchPreference
         android:defaultValue="true"
+        android:summary="@string/summary_config_log"
         android:key="sp_key_config_log"
         android:title="@string/config_log"/>
 
@@ -23,7 +25,7 @@
 
     <Preference
         android:key="about"
-        android:summary="@string/about_global"
+        android:summary="@string/summary_about_global"
         android:title="@string/about"/>
 
 </PreferenceScreen>
