@@ -3,7 +3,18 @@
     <array name="adapt_title">
         <item>应用</item>
         <item>设置</item>
+    </array>
 
+    <array name="ali_edit_way_key">
+        <item>edit</item>
+        <item>sensor</item>
+        <item>off</item>
+    </array>
+
+    <array name="ali_edit_way_display">
+        <item>直接修改步数</item>
+        <item>传感器加速</item>
+        <item>停用</item>
     </array>
 
 </resources>
