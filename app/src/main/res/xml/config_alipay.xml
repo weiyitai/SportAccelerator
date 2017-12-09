@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:title="加速"
-        android:defaultValue="true"
+    <ListPreference
+        android:entries="@array/ali_edit_way_display"
+        android:entryValues="@array/ali_edit_way_key"
         android:key="@string/pk_alipay"
-        android:summaryOff="@string/disable"
-        android:summaryOn="@string/enable"/>
+        android:negativeButtonText="@null"
+        android:summary="@string/edit"
+        android:title="@string/ali_mode"/>
 
     <EditTextPreference
-        android:defaultValue="60000"
+        android:defaultValue="30000"
         android:inputType="number"
         android:key="sp_key_ali_upper_limit"
-        android:summary="50000"
+        android:summary="30000"
         android:title="@string/up_limit"/>
 
     <EditTextPreference
@@ -23,17 +24,27 @@
         android:summary="15"
         android:title="@string/speed_rate"/>
 
+
+    <EditTextPreference
+        android:defaultValue="9998"
+        android:inputType="number"
+        android:key="sp_key_ali_gain_step"
+        android:summary="9998"
+        android:title="@string/ali_first_edit"/>
+
     <Preference
-        android:key="stop_app"
-        android:summary="@string/about_stop_app"
-        android:title="@string/stop_alipay"/>
+        android:key="edit"
+        android:summary="@string/summary_about_edit"
+        android:title="@string/about_ali_edit"/>
 
     <Preference
         android:key="@string/about"
-        android:summary="@string/about_ali"
-        android:title="@string/about"/>
+        android:summary="@string/summary_about_sensor"
+        android:title="@string/about_ali_sensor"/>
 
     <Preference
-        android:key="direct_edit"
-        android:title="@string/direct_edit"/>
+        android:key="stop_app"
+        android:summary="@string/summary_stop_app"
+        android:title="@string/stop_alipay"/>
+
 </PreferenceScreen>
