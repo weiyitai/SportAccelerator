@@ -1,8 +1,10 @@
 package com.qianbajin.sportaccelerator.fragment;
 
-import android.preference.Preference;
+import android.preference.ListPreference;
+import android.text.TextUtils;
+import android.util.Log;
 
-import com.qianbajin.sportaccelerator.ConfigActivity;
+import com.qianbajin.sportaccelerator.Constant;
 import com.qianbajin.sportaccelerator.R;
 /**
  * @author Administrator
@@ -13,20 +15,16 @@ import com.qianbajin.sportaccelerator.R;
 public class AliFragment extends BasePreferenceFragment {
 
     @Override
-    protected int getResId() {
+    protected int getXmlId() {
         return R.xml.config_alipay;
     }
 
     @Override
-    protected void onPreferenceClick(Preference preference) {
-        super.onPreferenceClick(preference);
-        String key = preference.getKey();
-        switch (key) {
-            case "direct_edit":
-                ConfigActivity.show(getActivity(), key);
-                break;
-            default:
-                break;
-        }
+    protected void init() {
+        super.init();
+        ListPreference preference = (ListPreference) findPreference(Constant.PK_ALIPAY);
+        CharSequence entry = preference.getEntry();
+        Log.d(TAG, "entry:" + entry);
+        preference.setSummary(TextUtils.isEmpty(entry) ? getString(R.string.edit) : entry);
     }
 }
