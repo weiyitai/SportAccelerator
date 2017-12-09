@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-        android:entries="@array/ali_edit_way_display"
-        android:entryValues="@array/ali_edit_way_key"
-        android:key="@string/pk_alipay"
-        android:negativeButtonText="@null"
-        android:summary="@string/edit"
-        android:title="@string/ali_mode"/>
+    <SwitchPreference
+        android:key="sp_key_ali_sensor"
+        android:defaultValue="false"
+        android:title="@string/sensor_speedup"/>
+
+    <SwitchPreference
+        android:title="@string/direct_edit"
+        android:defaultValue="true"
+        android:key="sp_key_ali_edit"/>
 
     <EditTextPreference
         android:defaultValue="30000"
