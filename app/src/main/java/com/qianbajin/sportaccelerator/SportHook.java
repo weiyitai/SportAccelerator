@@ -89,9 +89,9 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 XposedBridge.hookMethod(onCreate, new AliApplicationHook());
             }
             sAliUpperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "30000"));
-            printLog("在EXT进程启动之前判断,今日步数是否已达标:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
+            printLog("在EXT进程启动之前判断,今日步数是否已达标:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit, "    ", sProcessName);
             if (sProcessName.equals(Constant.ALI_EXT)) {
-                if (Constant.SP_KEY_ALI_SENSOR.equals(sXsp.getString(Constant.PK_ALIPAY, ""))) {
+                if (sXsp.getBoolean(Constant.SP_KEY_ALI_SENSOR, false)) {
                     if (ALI_TODAY_STEP < sAliUpperLimit) {
                         printLog("ALI_TODAY_STEP < sAliUpperLimit:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
                         RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
@@ -123,12 +123,12 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
 
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            boolean edit = Constant.SP_KEY_ALI_EDIT.equals(sXsp.getString(Constant.PK_ALIPAY, ""));
             Application application = (Application) param.thisObject;
-            printLog("onCreate", "    application:", application, "    edit:", edit);
+            printLog("onCreate,application:", application);
             SharedPreferences recordSp = application.getSharedPreferences("NewPedoMeter_private", Context.MODE_PRIVATE);
             AliStepRecord recordStep = getRecordStep(recordSp);
             AliStepRecord todayStep = getTodayStep(application);
+            boolean edit = sXsp.getBoolean(Constant.SP_KEY_ALI_EDIT, false);
             if (edit) {
                 int upperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "26000"));
                 int gainStep = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_GAIN_STEP, "19000"));
