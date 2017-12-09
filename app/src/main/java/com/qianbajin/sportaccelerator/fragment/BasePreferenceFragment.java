@@ -19,26 +19,35 @@ import com.qianbajin.sportaccelerator.v4.PreferenceFragment;
 public abstract class BasePreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = "BasePreferenceFragment";
+    protected SharedPreferences mSp;
+
     @Override
     public void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        addPreferencesFromResource(getResId());
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        addPreferencesFromResource(getXmlId());
+        mSp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         PreferenceScreen screen = getPreferenceScreen();
-        int preferenceCount = screen.getPreferenceCount();
-        for (int i = 0; i < preferenceCount; i++) {
-            Preference preference = screen.getPreference(i);
-            if (preference instanceof EditTextPreference) {
-                onSharedPreferenceChanged(sp, preference.getKey());
+        if (screen != null) {
+            int preferenceCount = screen.getPreferenceCount();
+            for (int i = 0; i < preferenceCount; i++) {
+                Preference preference = screen.getPreference(i);
+                if (preference instanceof EditTextPreference) {
+                    onSharedPreferenceChanged(mSp, preference.getKey());
+                }
             }
         }
+        init();
+    }
+
+    protected void init() {
     }
 
     /**
      * 获取布局ID
+     *
      * @return
      */
-    protected abstract int getResId();
+    protected abstract int getXmlId();
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
