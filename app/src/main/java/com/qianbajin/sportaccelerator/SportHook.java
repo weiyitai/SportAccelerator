@@ -171,6 +171,8 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     stepRecord = stepRecordList.get(stepRecordList.size() - 1);
                     SENSOR_STEP = stepRecord.getSteps();
                 }
+            } else {
+                XposedBridge.log("糟糕,获取到的步数为空哎!是不是来晚了一步!");
             }
             return stepRecord != null ? stepRecord : new AliStepRecord();
         }
@@ -182,6 +184,8 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             if (!TextUtils.isEmpty(step)) {
                 baseStep = JSON.parseObject(step, AliStepRecord.class);
                 ALI_TODAY_STEP = baseStep.getTime() > getToday0Mills() ? baseStep.getSteps() : 0;
+            } else {
+                XposedBridge.log("奇怪!今天的步数为空哎!主人切换了账号?重新登录了?");
             }
             return baseStep != null ? baseStep : new AliStepRecord();
         }
