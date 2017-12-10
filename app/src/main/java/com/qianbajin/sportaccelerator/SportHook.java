@@ -61,10 +61,8 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         sXsp.reload();
         Map<String, ?> all = sXsp.getAll();
         if (all.isEmpty()) {
-            XposedBridge.log(BuildConfig.APPLICATION_ID + "加载资源失败");
+            XposedBridge.log(BuildConfig.APPLICATION_ID + "加载资源失败,没有权限?尝试启动一下本App,然后正常退出吧!");
         }
-        sConfigLog = sXsp.getBoolean(Constant.SP_KEY_CONFIG_LOG, true);
-        sSensorLog = sXsp.getBoolean(Constant.SP_KEY_SENSOR_LOG, false);
         printLog(sXsp.getAll());
     }
 
@@ -124,11 +122,15 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             Application application = (Application) param.thisObject;
-            printLog("onCreate,application:", application);
-            SharedPreferences recordSp = application.getSharedPreferences("NewPedoMeter_private", Context.MODE_PRIVATE);
-            AliStepRecord recordStep = getRecordStep(recordSp);
-            AliStepRecord todayStep = getTodayStep(application);
             boolean edit = sXsp.getBoolean(Constant.SP_KEY_ALI_EDIT, false);
+            printLog("onCreate,application:", application, "    edit:", edit);
+            SharedPreferences recordSp = application.getSharedPreferences("NewPedoMeter_private", Context.MODE_PRIVATE);
+            AliStepRecord todayStep = getTodayStep(application);
+            AliStepRecord recordStep = getRecordStep(recordSp);
+            if (todayStep == null || recordStep == null) {
+                printLog("糟糕,今天步数或记录为空,本次放弃修改!");
+                return;
+            }
             if (edit) {
                 int upperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "26000"));
                 int gainStep = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_GAIN_STEP, "19000"));
@@ -137,13 +139,13 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     long today0Mills = getToday0Mills();
                     // 是否是今天记录
                     String tip;
-                    long haftMin = 30000;
+                    long tenSec = 10000;
                     if (time < today0Mills) {
                         recordStep.setTime(today0Mills + 10);
                         tip = "新的一天增加步数";
-                    } else if (time + haftMin < recordStep.getTime()) {
+                    } else if (time + tenSec < recordStep.getTime()) {
                         // 把记录尽量靠前,这样可以跨步数大点
-                        recordStep.setTime(time + haftMin);
+                        recordStep.setTime(time + tenSec);
                         tip = "在baseStep的时间上增加步数";
                     } else {
                         tip = "在stepRecord的时间上增加步数";
@@ -153,6 +155,8 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     String json = JSON.toJSON(new AliStepRecord[]{recordStep}).toString();
                     recordSp.edit().putString(Constant.ALI_SP_KEY_STEPRECORD, json).apply();
                     printLog("修改完成>>:", tip, ">>baseStep:", ALI_TODAY_STEP, "    本次增加步数:", gainStep, "    修改之后步数:", ALI_TODAY_STEP + gainStep);
+                } else {
+                    printLog("今天步数已经达标,明天再改吧!嘿嘿,今天步数为:", ALI_TODAY_STEP);
                 }
             }
         }
@@ -172,9 +176,9 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     SENSOR_STEP = stepRecord.getSteps();
                 }
             } else {
-                XposedBridge.log("糟糕,获取到的步数为空哎!是不是来晚了一步!");
+                XposedBridge.log("糟糕,获取到的步数为空哎!切换了账号?");
             }
-            return stepRecord != null ? stepRecord : new AliStepRecord();
+            return stepRecord;
         }
 
         private AliStepRecord getTodayStep(Application application) {
@@ -187,7 +191,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             } else {
                 XposedBridge.log("奇怪!今天的步数为空哎!主人切换了账号?重新登录了?");
             }
-            return baseStep != null ? baseStep : new AliStepRecord();
+            return baseStep;
         }
 
         private long getToday0Mills() {
