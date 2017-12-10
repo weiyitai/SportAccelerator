@@ -10,7 +10,7 @@ import com.qianbajin.sportaccelerator.R;
 public class AliEditFragment extends BasePreferenceFragment {
 
     @Override
-    protected int getResId() {
+    protected int getXmlId() {
         return R.xml.config_alipay_edit;
     }
 }

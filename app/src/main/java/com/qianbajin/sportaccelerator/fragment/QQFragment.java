@@ -10,7 +10,7 @@ import com.qianbajin.sportaccelerator.R;
 public class QQFragment extends BasePreferenceFragment {
 
     @Override
-    protected int getResId() {
+    protected int getXmlId() {
         return R.xml.config_qq;
     }
 }

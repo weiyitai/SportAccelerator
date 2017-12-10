@@ -89,14 +89,14 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 XposedBridge.hookMethod(onCreate, new AliApplicationHook());
             }
             sAliUpperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "30000"));
-            printLog("在EXT进程启动之前判断,今日步数是否已达标:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit, "    ", sProcessName);
             if (sProcessName.equals(Constant.ALI_EXT)) {
-                if (sXsp.getBoolean(Constant.SP_KEY_ALI_SENSOR, false)) {
-                    if (ALI_TODAY_STEP < sAliUpperLimit) {
-                        printLog("ALI_TODAY_STEP < sAliUpperLimit:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
-                        RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
-                        direHook(lpparam, RATE_ALI);
-                    }
+                boolean sensor = sXsp.getBoolean(Constant.SP_KEY_ALI_SENSOR, false);
+                printLog("ALI_TODAY_STEP < sAliUpperLimit:sensor:", sensor);
+                if (sensor && ALI_TODAY_STEP < sAliUpperLimit) {
+                    printLog("ALI_TODAY_STEP < sAliUpperLimit:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
+                    RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
+                    direHook(lpparam, RATE_ALI);
+                    sSensorLog = sXsp.getBoolean(Constant.SP_KEY_SENSOR_LOG, false);
                 }
             }
         }
@@ -189,7 +189,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         private long getToday0Mills() {
             if (mToday0Mills == 0) {
                 sCalendar.setTimeInMillis(System.currentTimeMillis());
-                sCalendar.set(Calendar.HOUR, 0);
+                sCalendar.set(Calendar.HOUR_OF_DAY, 0);
                 sCalendar.set(Calendar.MINUTE, 0);
                 sCalendar.set(Calendar.SECOND, 0);
                 sCalendar.set(Calendar.MILLISECOND, 0);

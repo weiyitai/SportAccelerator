@@ -66,4 +66,5 @@
     </string>
     <string name="summary_config_log">记录配置文件以及步数的读取情况</string>
     <string name="summary_sensor_log">记录传感器数据记录,日志较多,若无需查看,建议关闭</string>
+    <string name="sensor_speedup">传感器加速</string>
 </resources>
