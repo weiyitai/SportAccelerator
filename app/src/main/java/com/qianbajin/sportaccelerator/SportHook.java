@@ -79,6 +79,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         sPackageName = lpparam.packageName;
         sProcessName = lpparam.processName;
         if (sPackageName.equals(Constant.PK_ALIPAY)) {
+            sConfigLog = sXsp.getBoolean(Constant.SP_KEY_CONFIG_LOG, false);
             printLog("加载:", sPackageName, "     进程:", lpparam.processName, "     pid:", Process.myPid());
             if (sProcessName.equals(Constant.PK_ALIPAY)) {
                 loadConfig();
@@ -89,9 +90,8 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             sAliUpperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "30000"));
             if (sProcessName.equals(Constant.ALI_EXT)) {
                 boolean sensor = sXsp.getBoolean(Constant.SP_KEY_ALI_SENSOR, false);
-                printLog("ALI_TODAY_STEP < sAliUpperLimit:sensor:", sensor);
+                printLog("ALI_TODAY_STEP < sAliUpperLimit:sensor:", sensor, "    ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
                 if (sensor && ALI_TODAY_STEP < sAliUpperLimit) {
-                    printLog("ALI_TODAY_STEP < sAliUpperLimit:ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
                     RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
                     direHook(lpparam, RATE_ALI);
                     sSensorLog = sXsp.getBoolean(Constant.SP_KEY_SENSOR_LOG, false);
@@ -100,10 +100,15 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         }
 
         if (sPackageName.equals(Constant.PK_QQ)) {
+            sConfigLog = sXsp.getBoolean(Constant.SP_KEY_CONFIG_LOG, false);
             printLog("加载:", sPackageName, "     进程:", lpparam.processName, "     pid:", Process.myPid());
+            if (sProcessName.equals(Constant.PK_QQ)) {
+                loadConfig();
+            }
             if (sProcessName.equals(Constant.QQ_MSF)) {
                 RATE_QQ = Integer.parseInt(sXsp.getString(Constant.SP_KEY_QQ_RATE, "15"));
                 direHook(lpparam, RATE_QQ);
+                sSensorLog = sXsp.getBoolean(Constant.SP_KEY_SENSOR_LOG, false);
             }
         }
     }
@@ -128,7 +133,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             AliStepRecord todayStep = getTodayStep(application);
             AliStepRecord recordStep = getRecordStep(recordSp);
             if (todayStep == null || recordStep == null) {
-                printLog("糟糕,今天步数或记录为空,本次放弃修改!");
                 return;
             }
             if (edit) {
@@ -176,7 +180,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     SENSOR_STEP = stepRecord.getSteps();
                 }
             } else {
-                XposedBridge.log("糟糕,获取到的步数为空哎!切换了账号?");
+                XposedBridge.log("糟糕,步数记录数据为空哎!主人切换了账号?");
             }
             return stepRecord;
         }
@@ -189,7 +193,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 baseStep = JSON.parseObject(step, AliStepRecord.class);
                 ALI_TODAY_STEP = baseStep.getTime() > getToday0Mills() ? baseStep.getSteps() : 0;
             } else {
-                XposedBridge.log("奇怪!今天的步数为空哎!主人切换了账号?重新登录了?");
+                XposedBridge.log("奇怪!今天的步数数据为空哎!主人切换了账号?重新登录了?");
             }
             return baseStep;
         }
