@@ -4,9 +4,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/sport"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
@@ -20,7 +19,7 @@
             android:value="30"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="screenSize|orientation|keyboardHidden"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -32,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ConfigActivity"
+            android:name=".ui.ConfigActivity"
             android:configChanges="screenSize|orientation|keyboardHidden">
         </activity>
     </application>

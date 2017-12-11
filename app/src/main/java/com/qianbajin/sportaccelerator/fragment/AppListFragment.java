@@ -1,4 +1,4 @@
-package com.qianbajin.sportaccelerator;
+package com.qianbajin.sportaccelerator.fragment;
 
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
@@ -6,9 +6,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
+import com.qianbajin.sportaccelerator.ui.ConfigActivity;
+import com.qianbajin.sportaccelerator.Constant;
+import com.qianbajin.sportaccelerator.R;
 import com.qianbajin.sportaccelerator.v4.PreferenceFragment;
 /**
  * @author Administrator

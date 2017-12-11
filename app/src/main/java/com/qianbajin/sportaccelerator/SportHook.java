@@ -179,7 +179,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                         StringBuilder sb = new StringBuilder(64).append("修改完成>>:").append(tip).append("  修改步数的时间为:").append(new SimpleDateFormat(PATTERN, Locale.getDefault()).format(new Date(recordStep.getTime()))).append("    SENSOR_STEP:")
                                 .append(SENSOR_STEP).append(">>baseStep:").append(ALI_TODAY_STEP).append("    本次增加步数:").append(gainStep).append("    修改之后步数:").append(ALI_TODAY_STEP + gainStep).append(">>mToday0Mills:").append(mToday0Mills);
                         XposedBridge.log(sb.toString());
-
                     } else {
                         XposedBridge.log("今天步数已经达标,明天再改吧!嘿嘿,今天步数为:" + ALI_TODAY_STEP + "    SENSOR_STEP:" + SENSOR_STEP);
                     }

@@ -1,4 +1,4 @@
-package com.qianbajin.sportaccelerator;
+package com.qianbajin.sportaccelerator.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
-import com.qianbajin.sportaccelerator.fragment.AliEditFragment;
+import com.qianbajin.sportaccelerator.Constant;
+import com.qianbajin.sportaccelerator.R;
 import com.qianbajin.sportaccelerator.fragment.AliFragment;
 import com.qianbajin.sportaccelerator.fragment.QQFragment;
 
@@ -24,24 +25,21 @@ public class ConfigActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
         String pk = getIntent().getStringExtra(ARG);
-        Fragment fragment;
+        Fragment fragment = null;
         String title = "";
         if (pk.equals(Constant.PK_ALIPAY)) {
             fragment = new AliFragment();
             title = getString(R.string.alipay);
-        } else if (pk.equals(Constant.PK_QQ)) {
+        } else {
             fragment = new QQFragment();
             title = getString(R.string.qq);
-        } else {
-            fragment = new AliEditFragment();
-            title = getString(R.string.edit_ali_step);
         }
         setTitle(title);
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_content, fragment).commit();
 
     }
 
-    public static void show(Context context,String packageName) {
+    public static void show(Context context, String packageName) {
         Intent intent = new Intent(context, ConfigActivity.class);
         intent.putExtra(ConfigActivity.ARG, packageName);
         context.startActivity(intent);

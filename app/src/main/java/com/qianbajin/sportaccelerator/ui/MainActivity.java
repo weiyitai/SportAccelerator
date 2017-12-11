@@ -1,4 +1,4 @@
-package com.qianbajin.sportaccelerator;
+package com.qianbajin.sportaccelerator.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -8,6 +8,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.qianbajin.sportaccelerator.R;
+import com.qianbajin.sportaccelerator.fragment.AppListFragment;
+import com.qianbajin.sportaccelerator.fragment.SettingFragment;
 
 import java.io.IOException;
 
