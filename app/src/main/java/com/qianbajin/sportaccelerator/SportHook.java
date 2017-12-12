@@ -3,19 +3,16 @@ package com.qianbajin.sportaccelerator;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
 import android.os.Process;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.qianbajin.sportaccelerator.bean.AliStepRecord;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,7 +43,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
     private static String sPackageName, sProcessName;
     private static XSharedPreferences sXsp;
     private static boolean sConfigLog = true, sSensorLog;
-    private static Calendar sCalendar;
     private static StringBuilder sSb;
 
     private static void printString(String msg) {
@@ -70,15 +66,16 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         Map<String, ?> all = sXsp.getAll();
         if (all.isEmpty()) {
             XposedBridge.log(BuildConfig.APPLICATION_ID + "加载资源失败,没有权限?尝试启动一下本App,然后正常退出吧!");
+        } else {
+            StringBuilder sb = new StringBuilder(64);
+            sb.append('{');
+            Set<? extends Map.Entry<String, ?>> entries = all.entrySet();
+            for (Map.Entry<String, ?> entry : entries) {
+                sb.append(entry.getKey()).append('=').append(entry.getValue()).append(',');
+            }
+            sb.append('}');
+            XposedBridge.log(sb.toString());
         }
-        StringBuilder sb = new StringBuilder(64);
-        sb.append('{');
-        Set<? extends Map.Entry<String, ?>> entries = all.entrySet();
-        for (Map.Entry<String, ?> entry : entries) {
-            sb.append(entry.getKey()).append('=').append(entry.getValue()).append(',');
-        }
-        sb.append('}');
-        XposedBridge.log(sb.toString());
     }
 
     private static void direHook(XC_LoadPackage.LoadPackageParam lpparam, int rate) {
@@ -132,7 +129,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
     public void initZygote(StartupParam startupParam) throws Throwable {
         XposedBridge.log("initZygote初始化加载,pid:" + Process.myPid());
         sXsp = new XSharedPreferences(BuildConfig.APPLICATION_ID);
-        sCalendar = Calendar.getInstance();
         sSb = new StringBuilder(64);
     }
 
@@ -144,9 +140,10 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             Application application = (Application) param.thisObject;
             boolean edit = sXsp.getBoolean(Constant.SP_KEY_ALI_EDIT, false);
-            XposedBridge.log("onCreate,application:" + application + "    edit:" + Boolean.toString(edit));
+            XposedBridge.log("onCreate.application,直接修改已:" + (edit ? "打开" : "关闭"));
             SharedPreferences recordSp = application.getSharedPreferences("NewPedoMeter_private", Context.MODE_PRIVATE);
-            AliStepRecord todayStep = getTodayStep(application);
+            SharedPreferences baseSp = application.getSharedPreferences("NewPedoMeter", Context.MODE_PRIVATE);
+            AliStepRecord todayStep = getTodayStep(baseSp);
             AliStepRecord recordStep = getRecordStep(recordSp);
             if (todayStep != null && recordStep != null) {
                 if (edit) {
@@ -176,14 +173,49 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                         recordStep.setSteps(sensorStep - gainStep);
                         String json = JSON.toJSON(new AliStepRecord[]{recordStep}).toString();
                         recordSp.edit().putString(Constant.ALI_SP_KEY_STEPRECORD, json).apply();
-                        StringBuilder sb = new StringBuilder(64).append("修改完成>>:").append(tip).append("  修改步数的时间为:").append(new SimpleDateFormat(PATTERN, Locale.getDefault()).format(new Date(recordStep.getTime()))).append("    SENSOR_STEP:")
-                                .append(SENSOR_STEP).append(">>baseStep:").append(ALI_TODAY_STEP).append("    本次增加步数:").append(gainStep).append("    修改之后步数:").append(ALI_TODAY_STEP + gainStep).append(">>mToday0Mills:").append(mToday0Mills);
+                        SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.getDefault());
+                        AliStepRecord lastStepToday = getLastStepToday(baseSp);
+                        AliStepRecord firstStep = getFirstStep(recordSp);
+                        StringBuilder sb = new StringBuilder(64).append("修改完成>>:").append(tip)
+                                .append("  stepRecord的时间为:").append(format.format(new Date(recordStep.getTime())))
+                                .append("  SENSOR_STEP:").append(SENSOR_STEP)
+                                .append("  baseStep:").append(ALI_TODAY_STEP)
+                                .append("  baseStepTime:").append(format.format(new Date(todayStep.getTime())))
+                                .append("  firstStep:").append(firstStep.getSteps())
+                                .append("  firstStepTime:").append(format.format(new Date(firstStep.getTime())))
+                                .append("  lastStep:").append(lastStepToday.getSteps())
+                                .append("  lastStepTime:").append(format.format(new Date(lastStepToday.getTime())))
+                                .append("  本次增加步数:").append(gainStep)
+                                .append("  修改之后步数:").append(ALI_TODAY_STEP + gainStep)
+                                .append("  mToday0Mills:").append(mToday0Mills);
                         XposedBridge.log(sb.toString());
                     } else {
                         XposedBridge.log("今天步数已经达标,明天再改吧!嘿嘿,今天步数为:" + ALI_TODAY_STEP + "    SENSOR_STEP:" + SENSOR_STEP);
                     }
                 }
             }
+        }
+
+        private AliStepRecord getFirstStep(SharedPreferences recordSp) {
+            String firstStep = recordSp.getString(Constant.ALI_SP_KEY_FIRST_STEP, "");
+            if (!TextUtils.isEmpty(firstStep)) {
+                AliStepRecord stepRecord = JSON.parseObject(firstStep, AliStepRecord.class);
+                return stepRecord;
+            } else {
+                XposedBridge.log("firstStep 数据为空");
+            }
+            return new AliStepRecord();
+        }
+
+        private AliStepRecord getLastStepToday(SharedPreferences sp) {
+            String lastStep = sp.getString(Constant.ALI_SP_KEY_LAST_STEP_TODAY, "");
+            if (!TextUtils.isEmpty(lastStep)) {
+                AliStepRecord lastSteps = JSON.parseObject(lastStep, AliStepRecord.class);
+                return lastSteps;
+            } else {
+                XposedBridge.log("上次步数记录为空");
+            }
+            return new AliStepRecord();
         }
 
         @Override
@@ -206,8 +238,7 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             return stepRecord;
         }
 
-        private AliStepRecord getTodayStep(Application application) {
-            SharedPreferences baseSp = application.getSharedPreferences("NewPedoMeter", Context.MODE_PRIVATE);
+        private AliStepRecord getTodayStep(SharedPreferences baseSp) {
             String step = baseSp.getString(Constant.ALI_SP_KEY_BASESTEP, "");
             AliStepRecord baseStep = null;
             if (!TextUtils.isEmpty(step)) {
@@ -221,17 +252,15 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
 
         private long getToday0Mills() {
             if (mToday0Mills == 0L) {
-                sCalendar.setTimeInMillis(System.currentTimeMillis());
-                sCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                sCalendar.set(Calendar.MINUTE, 0);
-                sCalendar.set(Calendar.SECOND, 0);
-                sCalendar.set(Calendar.MILLISECOND, 0);
-                mToday0Mills = sCalendar.getTimeInMillis();
-                XposedBridge.log("设置了时间,今天0点毫秒值:" + mToday0Mills);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                mToday0Mills = calendar.getTimeInMillis();
             }
             return mToday0Mills;
         }
-
     }
 
 
@@ -244,16 +273,13 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
 
         public DireSportHook(int rate) {
             mRate = rate;
-            mSb = new StringBuilder(128);
+            mSb = new StringBuilder();
             printLog("DireSportHook rate:", rate, "    SENSOR_STEP:", SENSOR_STEP, "   ALI_TODAY_STEP:", ALI_TODAY_STEP);
         }
 
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             int value = (int) ((float[]) param.args[1])[0];
-//            if (SENSOR_STEP > value) {
-//                value = SENSOR_STEP;
-//            }
             mAfter = value + mRate * mCount;
             ((float[]) param.args[1])[0] = mAfter;
             mCount++;
@@ -272,57 +298,4 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             }
         }
     }
-
-
-    private static class SensorHook extends XC_MethodHook {
-
-        public static int COUNT;
-        private HashMap<Integer, Sensor> mHandleToSensor;
-
-        @Override
-        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            int handle = (int) param.args[0];
-            if (mHandleToSensor == null) {
-                Class<?> SystemSensorManager = XposedHelpers.findClass("android.hardware.SystemSensorManager", XposedBridge.BOOTCLASSLOADER);
-                Field handleToSensor = XposedHelpers.findField(SystemSensorManager, "mHandleToSensor");
-                Field mManager = XposedHelpers.findField(param.thisObject.getClass().getSuperclass(), "mManager");
-                Object o = mManager.get(param.thisObject);
-                mHandleToSensor = (HashMap) handleToSensor.get(o);
-            }
-            Sensor sensor = mHandleToSensor.get(handle);
-            if (sensor == null) {
-                printLog("sensor == null");
-                mHandleToSensor = null;
-                // sensor disconnected
-                return;
-            }
-            int type = sensor.getType();
-            if (type == Sensor.TYPE_STEP_COUNTER || type == Sensor.TYPE_STEP_DETECTOR) {
-                float value = ((float[]) param.args[1])[0];
-                if (sPackageName.equals(ALIPAY)) {
-                    int max = Math.max(((int) value), SENSOR_STEP);
-                    ((float[]) param.args[1])[0] += RATE_ALI * COUNT;
-                    COUNT++;
-                    printLog(sProcessName, "  传感器值:", value, "   ", RATE_ALI + " * " + COUNT, "   步数:", ((float[]) param.args[1])[0]);
-                }
-                if (sPackageName.equals(QQ)) {
-                    ((float[]) param.args[1])[0] += RATE_QQ * COUNT;
-                    COUNT++;
-                    printLog(sProcessName, "  传感器值:", value, "   ", RATE_QQ + " * " + COUNT, "   步数:", ((float[]) param.args[1])[0]);
-                }
-                if (sPackageName.equals(DYLAN)) {
-                    ((float[]) param.args[1])[0] += M_DYLAN * COUNT;
-                    sStep = value;
-                    COUNT++;
-                    printLog(sProcessName, "  传感器值:", value, "   ", M_DYLAN + " * " + COUNT, "   步数:", ((float[]) param.args[1])[0]);
-                }
-                if (sPackageName.equals(SAMSUNG_HEALTH)) {
-                    ((float[]) param.args[1])[0] += M_SHEALTH * COUNT;
-                    COUNT++;
-                    printLog(sProcessName, "  传感器值:", value, "   ", M_SHEALTH + " * " + COUNT, "   步数:", ((float[]) param.args[1])[0]);
-                }
-            }
-        }
-    }
-
 }
