@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String SP_PATH = "chmod 654 /data/data/com.qianbajin.sportaccelerator/shared_prefs/com.qianbajin.sportaccelerator_preferences.xml";
     private static final String SP_PATH_P = "chmod 755 /data/data/com.qianbajin.sportaccelerator/shared_prefs";
-    private static final String SP_PATH_pp = "chmod 755 /data/data/com.qianbajin.sportaccelerator";
+    private static final String SP_PATH_PP = "chmod 755 /data/data/com.qianbajin.sportaccelerator";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -39,9 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean chmod() {
         try {
-            Runtime.getRuntime().exec(SP_PATH_pp);
-            Runtime.getRuntime().exec(SP_PATH_P);
-            Runtime.getRuntime().exec(SP_PATH);
+            Runtime runtime = Runtime.getRuntime();
+            runtime.exec(SP_PATH_PP);
+            runtime.exec(SP_PATH_P);
+            runtime.exec(SP_PATH);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
