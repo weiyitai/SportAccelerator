@@ -23,6 +23,8 @@ public class Constant {
     public static final String SP_KEY_ALI_GAIN_STEP = "sp_key_ali_gain_step";
     public static final String ALI_SP_KEY_BASESTEP = "baseStep";
     public static final String ALI_SP_KEY_STEPRECORD = "stepRecord";
+    public static final String ALI_SP_KEY_LAST_STEP_TODAY = "last_stepinfo_today";
+    public static final String ALI_SP_KEY_FIRST_STEP = "firstStep";
     public static final String SP_KEY_QQ_RATE = "sp_key_qq_rate";
     public static final String SP_KEY_SENSOR_LOG = "sp_key_sensor_log";
     public static final String SP_KEY_CONFIG_LOG = "sp_key_config_log";
