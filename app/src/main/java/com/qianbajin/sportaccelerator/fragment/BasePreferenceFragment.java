@@ -65,18 +65,26 @@ public abstract class BasePreferenceFragment extends PreferenceFragment implemen
     protected void onPreferenceClick(Preference preference) {
     }
 
+    protected boolean addPreferenceChangeListener() {
+        return true;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        if (addPreferenceChangeListener()) {
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        if (addPreferenceChangeListener()) {
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        }
     }
 
     @Override
