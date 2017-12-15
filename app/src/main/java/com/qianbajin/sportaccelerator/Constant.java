@@ -17,6 +17,7 @@ public class Constant {
     public static final String ALI_EXT = "com.eg.android.AlipayGphone:ext";
     public static final String PK_QQ = "com.tencent.mobileqq";
     public static final String QQ_MSF = "com.tencent.mobileqq:MSF";
+    public static final String S_HEALTH = "com.sec.android.app.shealth";
     public static final String SP_KEY_ALI_UPPER_LIMIT = "sp_key_ali_upper_limit";
     public static final String SP_KEY_QQ_UPPER_LIMIT = "sp_key_qq_upper_limit";
     public static final String SP_KEY_ALI_RATE = "sp_key_ali_rate";
