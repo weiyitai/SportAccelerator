@@ -13,9 +13,9 @@ public class Constant {
             "com.tencent.mobileqq"
     };
 
-    public static final String PK_ALIPAY = "com.eg.android.AlipayGphone";
+    public static final String PKG_ALIPAY = "com.eg.android.AlipayGphone";
     public static final String ALI_EXT = "com.eg.android.AlipayGphone:ext";
-    public static final String PK_QQ = "com.tencent.mobileqq";
+    public static final String PKG_QQ = "com.tencent.mobileqq";
     public static final String QQ_MSF = "com.tencent.mobileqq:MSF";
     public static final String S_HEALTH = "com.sec.android.app.shealth";
     public static final String SP_KEY_ALI_UPPER_LIMIT = "sp_key_ali_upper_limit";
@@ -29,7 +29,7 @@ public class Constant {
     public static final String SP_KEY_QQ_RATE = "sp_key_qq_rate";
     public static final String SP_KEY_SENSOR_LOG = "sp_key_sensor_log";
     public static final String SP_KEY_CONFIG_LOG = "sp_key_config_log";
-    public static final String SP_KEY_ALI_SENSOR = "sp_key_ali_sensor";
+    public static final String SP_KEY_ALI_SENSOR_HOOK = "sp_key_ali_sensor_hook";
     public static final String SP_KEY_ALI_EDIT = "sp_key_ali_edit";
     public static int ALI_STEP_TOTAL;
 
