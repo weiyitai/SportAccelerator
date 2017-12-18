@@ -60,7 +60,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         Map<String, ?> all = sXsp.getAll();
         if (!all.isEmpty()) {
             StringBuilder sb = new StringBuilder(64);
-            all.toString();
             sb.append('{');
             Set<? extends Map.Entry<String, ?>> entries = all.entrySet();
             for (Map.Entry<String, ?> entry : entries) {
@@ -85,10 +84,10 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         sPackageName = lpparam.packageName;
         sProcessName = lpparam.processName;
-        if (sPackageName.equals(Constant.PK_ALIPAY)) {
+        if (sPackageName.equals(Constant.PKG_ALIPAY)) {
             sConfigLog = sXsp.getBoolean(Constant.SP_KEY_CONFIG_LOG, true);
             printLog("加载:", sPackageName, "     进程:", lpparam.processName, "     pid:", Process.myPid());
-            if (sProcessName.equals(Constant.PK_ALIPAY)) {
+            if (sProcessName.equals(Constant.PKG_ALIPAY)) {
                 loadConfig();
                 boolean edit = sXsp.getBoolean(Constant.SP_KEY_ALI_EDIT, false);
                 XposedBridge.log("直接修改已:" + (edit ? "打开" : "关闭"));
@@ -97,12 +96,11 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     Method onCreate = XposedHelpers.findMethodExact(application, "onCreate", new Class[0]);
                     XposedBridge.hookMethod(onCreate, new AliApplicationHook());
                 }
-            }
-            sAliUpperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "30000"));
-            if (sProcessName.equals(Constant.ALI_EXT)) {
-                boolean sensor = sXsp.getBoolean(Constant.SP_KEY_ALI_SENSOR, false);
-                printLog(":sensor:", sensor, "    ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
-                if (sensor && ALI_TODAY_STEP < sAliUpperLimit) {
+            } else if (sProcessName.equals(Constant.ALI_EXT)) {
+                sAliUpperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "30000"));
+                boolean sensorHook = sXsp.getBoolean(Constant.SP_KEY_ALI_SENSOR_HOOK, false);
+                printLog(":sensorHook:", sensorHook, "    ALI_TODAY_STEP:", ALI_TODAY_STEP, "    sAliUpperLimit:", sAliUpperLimit);
+                if (sensorHook && ALI_TODAY_STEP < sAliUpperLimit) {
                     RATE_ALI = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_RATE, "15"));
                     direHook(lpparam, RATE_ALI);
                     sSensorLog = sXsp.getBoolean(Constant.SP_KEY_SENSOR_LOG, false);
@@ -110,10 +108,10 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             }
         }
 
-        if (sPackageName.equals(Constant.PK_QQ)) {
+        if (sPackageName.equals(Constant.PKG_QQ)) {
             sConfigLog = sXsp.getBoolean(Constant.SP_KEY_CONFIG_LOG, false);
             printLog("加载:", sPackageName, "     进程:", lpparam.processName, "     pid:", Process.myPid());
-            if (sProcessName.equals(Constant.PK_QQ)) {
+            if (sProcessName.equals(Constant.PKG_QQ)) {
                 loadConfig();
             }
             if (sProcessName.equals(Constant.QQ_MSF)) {
@@ -133,15 +131,15 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
     private static class AliApplicationHook extends XC_MethodHook {
 
         private long mToday0Mills;
+        private SharedPreferences mRecordSp;
 
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
             Application application = (Application) param.thisObject;
             XposedBridge.log("onCreate.application");
-            SharedPreferences recordSp = application.getSharedPreferences("NewPedoMeter_private", Context.MODE_PRIVATE);
-            SharedPreferences baseSp = application.getSharedPreferences("NewPedoMeter", Context.MODE_PRIVATE);
-            AliStepRecord todayStep = getTodayStep(baseSp);
-            AliStepRecord recordStep = getRecordStep(recordSp);
+            mRecordSp = application.getSharedPreferences("NewPedoMeter_private", Context.MODE_PRIVATE);
+            AliStepRecord recordStep = getRecordStep(mRecordSp);
+            AliStepRecord todayStep = getTodayStep(application);
             if (todayStep != null && recordStep != null) {
                 int upperLimit = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_UPPER_LIMIT, "26000"));
                 int gainStep = Integer.parseInt(sXsp.getString(Constant.SP_KEY_ALI_GAIN_STEP, "19000"));
@@ -149,41 +147,32 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                     long baseMills = todayStep.getTime();
                     long today0Mills = getToday0Mills();
                     int sensorStep = recordStep.getSteps();
-                    if (sensorStep < 0) {
-                        // 上次写入数据后
-                        XposedBridge.log("sensorStep < 0,本次放弃修改");
-                        return;
-                    }
                     String tip;
                     // 是否是今天记录
                     if (baseMills < today0Mills) {
-                        recordStep.setTime(today0Mills + 60000);
+                        recordStep.setTime(today0Mills + 2000);
                         tip = "新的一天增加步数";
                     } else if (recordStep.getTime() < today0Mills) {
                         // 0点过后今天步数时间已经更新,但传感器记录不一定更新
-                        recordStep.setTime(baseMills + 60000);
+                        recordStep.setTime(baseMills + 2000);
                         tip = "在baseStep的时间上增加步数";
                     } else {
                         tip = "在stepRecord的时间上增加步数";
                     }
+                    if (ALI_TODAY_STEP + gainStep > upperLimit) {
+                        tip += ",本次再增加就超过步数上限了,减小修改量";
+                        gainStep = upperLimit - todayStep.getSteps();
+                    }
                     recordStep.setSteps(sensorStep - gainStep);
                     String json = JSON.toJSON(new AliStepRecord[]{recordStep}).toString();
-                    recordSp.edit().putString(Constant.ALI_SP_KEY_STEPRECORD, json).apply();
+                    mRecordSp.edit().putString(Constant.ALI_SP_KEY_STEPRECORD, json).apply();
                     SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.getDefault());
-                    AliStepRecord lastStepToday = getLastStepToday(baseSp);
-                    AliStepRecord firstStep = getFirstStep(recordSp);
-                    StringBuilder sb = new StringBuilder(64).append("修改完成>>:").append(tip)
+                    StringBuilder sb = new StringBuilder(128).append("修改完成>>:").append(tip)
                             .append("  stepRecord的时间为:").append(format.format(new Date(recordStep.getTime())))
-                            .append("  SENSOR_STEP:").append(SENSOR_STEP)
                             .append("  baseStep:").append(ALI_TODAY_STEP)
                             .append("  baseStepTime:").append(format.format(new Date(todayStep.getTime())))
-                            .append("  firstStep:").append(firstStep.getSteps())
-                            .append("  firstStepTime:").append(format.format(new Date(firstStep.getTime())))
-                            .append("  lastStep:").append(lastStepToday.getSteps())
-                            .append("  lastStepTime:").append(format.format(new Date(lastStepToday.getTime())))
                             .append("  本次增加步数:").append(gainStep)
-                            .append("  修改之后步数:").append(ALI_TODAY_STEP + gainStep)
-                            .append("  mToday0Mills:").append(mToday0Mills);
+                            .append("  修改之后步数:").append(ALI_TODAY_STEP + gainStep);
                     XposedBridge.log(sb.toString());
                 } else {
                     XposedBridge.log("今天步数已经达标,明天再改吧!嘿嘿,今天步数为:" + ALI_TODAY_STEP + "    SENSOR_STEP:" + SENSOR_STEP);
@@ -193,7 +182,19 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
 
         @Override
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-            XposedBridge.log("afterHookedMethod>>>android.app.Application>>baseStep:" + ALI_TODAY_STEP + "    SENSOR_STEP:" + SENSOR_STEP + ">>today0Mills:" + new SimpleDateFormat(PATTERN, Locale.getDefault()).format(new Date(getToday0Mills())));
+            Application application = (Application) param.thisObject;
+            AliStepRecord firstStep = getFirstStep(mRecordSp);
+            AliStepRecord lastStepToday = getLastStepToday(application);
+            SimpleDateFormat format = new SimpleDateFormat(PATTERN, Locale.getDefault());
+            StringBuilder sb = new StringBuilder(128);
+            sb.append("afterHookedMethod>>>SENSOR_STEP:").append(SENSOR_STEP)
+                    .append("  firstStep:").append(firstStep.getSteps())
+                    .append("  firstStepTime:").append(format.format(new Date(firstStep.getTime())))
+                    .append("  lastStep:").append(lastStepToday.getSteps())
+                    .append("  lastStepTime:").append(format.format(new Date(lastStepToday.getTime())))
+                    .append("  today0Mills:")
+                    .append(format.format(new Date(getToday0Mills())));
+            XposedBridge.log(sb.toString());
         }
 
         private AliStepRecord getFirstStep(SharedPreferences recordSp) {
@@ -203,17 +204,6 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                 return stepRecord;
             } else {
                 XposedBridge.log("firstStep 数据为空");
-            }
-            return new AliStepRecord();
-        }
-
-        private AliStepRecord getLastStepToday(SharedPreferences sp) {
-            String lastStep = sp.getString(Constant.ALI_SP_KEY_LAST_STEP_TODAY, "");
-            if (!TextUtils.isEmpty(lastStep)) {
-                AliStepRecord lastSteps = JSON.parseObject(lastStep, AliStepRecord.class);
-                return lastSteps;
-            } else {
-                XposedBridge.log("上次步数记录为空");
             }
             return new AliStepRecord();
         }
@@ -233,7 +223,20 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             return stepRecord;
         }
 
-        private AliStepRecord getTodayStep(SharedPreferences baseSp) {
+        private AliStepRecord getLastStepToday(Application application) {
+            SharedPreferences baseSp = application.getSharedPreferences("NewPedoMeter", Context.MODE_PRIVATE);
+            String lastStep = baseSp.getString(Constant.ALI_SP_KEY_LAST_STEP_TODAY, "");
+            if (!TextUtils.isEmpty(lastStep)) {
+                AliStepRecord lastSteps = JSON.parseObject(lastStep, AliStepRecord.class);
+                return lastSteps;
+            } else {
+                XposedBridge.log("上次步数记录为空");
+            }
+            return new AliStepRecord();
+        }
+
+        private AliStepRecord getTodayStep(Application application) {
+            SharedPreferences baseSp = application.getSharedPreferences("NewPedoMeter", Context.MODE_PRIVATE);
             String step = baseSp.getString(Constant.ALI_SP_KEY_BASESTEP, "");
             AliStepRecord baseStep = null;
             if (!TextUtils.isEmpty(step)) {
@@ -288,12 +291,8 @@ public class SportHook implements IXposedHookLoadPackage, IXposedHookZygoteInit 
                         .append(mCount)
                         .append("   步数:")
                         .append(mAfter);
-                if (mCount / 5 != 0) {
-                    mSb.append('\n');
-                } else {
-                    XposedBridge.log(mSb.toString());
-                    mSb.setLength(0);
-                }
+                XposedBridge.log(mSb.toString());
+                mSb.setLength(0);
             }
         }
     }
