@@ -29,7 +29,7 @@
     <string name="enable">已启用加速</string>
     <string name="disable">已关闭加速</string>
     <string name="stop_app">尝试停止应用</string>
-    <string name="direct_edit">尝试直接修改运动数据</string>
+    <string name="direct_edit">直接修改运动数据</string>
 
     <string name="about_ali">支付宝进行运动数据的上传会有一定的间隔,所以不是你每次打开进入运动界面都会看到最新的运动数据,需要等一会......\n
         如果看到的不是理想的运动数据,请过几分钟再进入或关闭应用再重新打开 </string>
