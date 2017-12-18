@@ -2,28 +2,28 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-        android:key="sp_key_ali_sensor"
-        android:defaultValue="false"
-        android:title="@string/sensor_speedup"/>
-
-    <SwitchPreference
         android:title="@string/direct_edit"
         android:defaultValue="true"
         android:key="sp_key_ali_edit"/>
 
+    <SwitchPreference
+        android:key="sp_key_ali_sensor_hook"
+        android:defaultValue="false"
+        android:title="@string/sensor_speedup"/>
+
     <EditTextPreference
-        android:defaultValue="30000"
+        android:defaultValue="39998"
         android:inputType="number"
         android:key="sp_key_ali_upper_limit"
-        android:summary="30000"
+        android:summary="39998"
         android:title="@string/up_limit"/>
 
     <EditTextPreference
-        android:defaultValue="30"
+        android:defaultValue="20"
         android:inputType="number"
         android:key="sp_key_ali_rate"
         android:numeric="integer"
-        android:summary="15"
+        android:summary="20"
         android:title="@string/speed_rate"/>
 
 
