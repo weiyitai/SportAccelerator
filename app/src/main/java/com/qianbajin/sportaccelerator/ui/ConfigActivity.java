@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.qianbajin.sportaccelerator.Constant;
 import com.qianbajin.sportaccelerator.R;
@@ -20,14 +22,24 @@ public class ConfigActivity extends AppCompatActivity {
 
     public static final String ARG = "arg";
 
+    public static void show(Context context, String packageName) {
+        Intent intent = new Intent(context, ConfigActivity.class);
+        intent.putExtra(ConfigActivity.ARG, packageName);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
-        String pk = getIntent().getStringExtra(ARG);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        String pkg = getIntent().getStringExtra(ARG);
         Fragment fragment = null;
         String title = "";
-        if (pk.equals(Constant.PK_ALIPAY)) {
+        if (pkg.equals(Constant.PKG_ALIPAY)) {
             fragment = new AliFragment();
             title = getString(R.string.alipay);
         } else {
@@ -39,9 +51,13 @@ public class ConfigActivity extends AppCompatActivity {
 
     }
 
-    public static void show(Context context, String packageName) {
-        Intent intent = new Intent(context, ConfigActivity.class);
-        intent.putExtra(ConfigActivity.ARG, packageName);
-        context.startActivity(intent);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
